@@ -15,13 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from ask/qa/views.py import test
+from qa.views import test
 
 urlpatterns = [
     path('login/', test),
     path('signup/', test),
-    path('question/1/', test)
-    path('ask/', test)
-    path('popular', test)
-    path('new/', test)
+    path('question/1/', test),
+    path('ask/', test),
+    path('popular', test),
+    path('new/', test),
 ]
