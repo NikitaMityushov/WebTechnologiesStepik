@@ -6,7 +6,7 @@ from django.urls import reverse
 
 class QuestionManager(models.Manager):
     def new(self):
-        return self.order_by("-added_at")
+        return self.order_by("-id")
     
     def popular(self):
         return self.order_by("-rating") 
@@ -14,8 +14,8 @@ class QuestionManager(models.Manager):
 
 class Question(models.Model):
     objects = QuestionManager()
-    title = models.CharField(max_length=256)
-    text = models.TextField()
+    title = models.CharField(max_length=256, default="")
+    text = models.TextField(default="")
     added_at = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField(default=0)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -26,7 +26,7 @@ class Question(models.Model):
 
 
 class Answer(models.Model):
-    text = models.TextField()
+    text = models.TextField(default="")
     added_at = models.DateTimeField(auto_now_add=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     author = models.ForeignKey(User, on_delete=models.CASCADE)

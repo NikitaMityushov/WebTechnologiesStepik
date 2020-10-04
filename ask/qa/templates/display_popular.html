@@ -9,6 +9,10 @@
 </head>
 <body>
 
+{% for question in questions %}
+    <a href="{{ question.get_url }}">{{ question.title }}</a><br>
+{% endfor %}
+
 <nav aria-label="Page navigation example">
     <ul class="pagination">
         {% for p in paginator.page_range %}
@@ -24,10 +28,6 @@
         {% endfor %}
     </ul>
 </nav>
-
-{% for question in questions %}
-    <a href="{{ question.get_url }}">{{ question.title }}</a><br>
-{% endfor %}
 
 </body>
 </html>
