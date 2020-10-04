@@ -7,7 +7,7 @@
 </head>
 <body>
     {% for question in questions %}
-        <a href="question/ {{ question.id }}">{{ question.title }}</a>
+        <p><a href="question/ {{ question.id }}">{{ question.title }}</a></p>
     {% endfor %}
 
     <div class="pagination">

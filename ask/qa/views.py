@@ -11,7 +11,7 @@ def test(request, *args, **kwargs):
 
 
 def display_new_question(request, *args, **kwargs):
-    question_list = Question.objects.new().order_by("-id")
+    question_list = Question.objects.all().order_by("-id")
     paginator = Paginator(question_list, 10)
 
     page = request.GET.get('page')
@@ -20,7 +20,7 @@ def display_new_question(request, *args, **kwargs):
 
 
 def display_popular(request, *args, **kwargs):
-    question_list = Question.objects.popular()
+    question_list = Question.objects.popular().order_by("-rating")
     paginator = Paginator(question_list, 10)
 
     page = request.GET.get('page')
