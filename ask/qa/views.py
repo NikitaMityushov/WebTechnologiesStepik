@@ -69,8 +69,10 @@ def display_popular(request, *args, **kwargs):
 
 def display_concrete(request, req_id):
     question = get_object_or_404(Question, id=req_id)
+    answers = Answer.objects.filter(question = question)
     return render(request, 'con_ques.html', {
         'question': question,
+        'answers': answers,
     })
 
 
