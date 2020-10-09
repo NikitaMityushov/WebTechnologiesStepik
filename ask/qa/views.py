@@ -1,7 +1,8 @@
-from django.shortcuts import render, get_object_or_404, Http404
+from django.shortcuts import render, get_object_or_404, Http404, HttpResponseRedirect
 from django.core.paginator import Paginator, EmptyPage
 from qa.models import Question, Answer
 from django.contrib.auth.models import User
+from qa.forms import AnswerForm, AskForm
 import datetime
 
 
@@ -68,11 +69,20 @@ def display_popular(request, *args, **kwargs):
 
 
 def display_concrete(request, req_id):
+    if request.method == "POST":
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save()
+            url = answer.question.get_url()
+            return HttpResponseRedirect(url)
+
     question = get_object_or_404(Question, id=req_id)
     answers = Answer.objects.filter(question = question)
+    form = AnswerForm(initial={'question': req_id}) 
     return render(request, 'con_ques.html', {
         'question': question,
         'answers': answers,
+        'form': form,
     })
 
 
@@ -90,3 +100,27 @@ def fill_db():
 
     Question.objects.create(title='question last', text='text', author=user)  
     Question.objects.get_or_create(pk=3141592, title='question about pi', text='what is the last digit?', author=user)
+
+
+def post_question(request):
+    if request.method == "POST":
+        form = AskForm(request.POST)
+        if form.is_valid():
+            question = form.save()
+            url = question.get_url()
+            return HttpResponseRedirect(url)
+    else:
+        form = AskForm()
+        return render(request, 'post_question.html', {'form': form}) # change to something 'ask.html'
+
+
+def post_answer(request):
+    if request.method == "POST":
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save()
+            url = answer.question.get_url()
+            return HttpResponseRedirect(url)
+    else:
+        form = AnswerForm(1)
+        return form
