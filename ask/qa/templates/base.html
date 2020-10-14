@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=`, initial-scale=1.0">
+    <title>Ask me something</title>
+</head>
+<body>
+    <header class="main-header">
+        <nav>
+            <div class="container">
+                <ul>
+                    <li><a href="display_new.html">New questions</a></li>
+                    <li><a href="post_question.html">Ask new question</a></li>
+                    <li><a href="display_popular.html">Popular question</a></li>
+                </ul>
+                <a href="signup.html">Sign up</a><br>
+                <a href="login.html">Log in</a><br>
+                <hr>
+            </div>
+        </nav>
+    </header>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+</body>
+</html>

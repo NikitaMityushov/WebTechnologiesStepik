@@ -1,32 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ask the question</title>
-</head>
-<body>
-    <header class="main-header">
-        <nav>
-            <div class="container">
-                <ul>
-                    <li><a href="display_new.html">New questions</a></li>
-                    <li><a href="post_question.html">Ask new question</a></li>
-                    <li><a href="display_popular.html">Popular question</a></li>
-                </ul>
-            </div>
-        </nav>
-    </header>
-    <main>
+{% extends "base.html" %}
+
+{% block content %}
         <div>
             <p>Questions</p>>
             <p>{{ question.title }}</p>
+            <p>{{ question.author }}</p>
             <p>{{ question.text }}</p>            
         </div>
         <div>
             <p>Answers</p>
             {% for answer in answers %}
-                <p>{{ answer.text }}</p>>
+                <p>{{ answer.author }}</p>
+                <p>{{ answer.text }}</p>
             {% endfor %}
         </div>
         <div>
@@ -35,10 +20,8 @@
                 {% csrf_token %}
                 <p>{{form.text}}</p>
                     {{form.question}}
+                    {{form.author}}
                 <p><button type="submit">Answer</button></p>
             </form>
         </div>
-    </main>
-
-</body>
-</html>
+{% endblock %}

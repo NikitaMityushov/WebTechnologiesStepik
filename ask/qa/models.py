@@ -29,7 +29,4 @@ class Answer(models.Model):
     text = models.TextField(default="")
     added_at = models.DateTimeField(auto_now_add=True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    author = models.ForeignKey(User, default=1, on_delete=models.CASCADE)
-
-    # def get_url(self):
-    #   return reverse("display_concrete", kwargs={'req_id': self.pk}) 
+    author = models.ForeignKey(User, on_delete=models.CASCADE)

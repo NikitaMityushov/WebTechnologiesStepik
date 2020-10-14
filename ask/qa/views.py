@@ -1,13 +1,12 @@
-from django.shortcuts import render, get_object_or_404, Http404, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, Http404, HttpResponseRedirect, redirect
 from django.core.paginator import Paginator, EmptyPage
 from qa.models import Question, Answer
 from django.contrib.auth.models import User
-from qa.forms import AnswerForm, AskForm
-import datetime
-
-
-# Create your views here.
+from django.contrib.auth import authenticate, login, logout
+from qa.forms import AnswerForm, AskForm, AuthorizationForm, SignupForm
+from datetime import datetime, timedelta
 from django.http import HttpResponse 
+
 
 def test(request, *args, **kwargs):
     return HttpResponse('OK')
@@ -69,16 +68,21 @@ def display_popular(request, *args, **kwargs):
 
 
 def display_concrete(request, req_id):
+    # POST
     if request.method == "POST":
-        form = AnswerForm(request.POST)
-        if form.is_valid():
-            answer = form.save()
-            url = answer.question.get_url()
-            return HttpResponseRedirect(url)
-
-    question = get_object_or_404(Question, id=req_id)
+        if request.user.is_authenticated:
+            form = AnswerForm(request.POST)
+            if form.is_valid():
+                answer = form.save()
+                url = answer.question.get_url()
+                return HttpResponseRedirect(url)
+        # is_authentificated == False
+        return HttpResponseRedirect("/login/")
+    # GET
+    question = get_object_or_404(Question, id=req_id,)
     answers = Answer.objects.filter(question = question)
-    form = AnswerForm(initial={'question': req_id}) 
+    form = AnswerForm(initial={'question': req_id, 'author': request.user.id})
+    print(form)
     return render(request, 'con_ques.html', {
         'question': question,
         'answers': answers,
@@ -89,7 +93,7 @@ def display_concrete(request, req_id):
 def fill_db():
     user, _ = User.objects.get_or_create(                                                                                                        
         username='x',                                                                                                                            
-        defaults={'password':'y', 'last_login': datetime.datetime.now()})
+        defaults={'password':'y', 'last_login': datetime.now()})
 
     for i in range(0, 30):
         title = 'question' + str(i)
@@ -103,24 +107,81 @@ def fill_db():
 
 
 def post_question(request):
+    # POST
     if request.method == "POST":
-        form = AskForm(request.POST)
+        if request.user.is_authenticated:
+            print("authorized111")
+            form = AskForm(request.POST)
+            print(request.POST)
+            if form.is_valid():
+                print("valid")
+                question = form.save()
+                url = question.get_url()
+                return HttpResponseRedirect(url)
+        else:
+            # is_authentificated == False
+            print("not authorized 222")
+            return HttpResponseRedirect("/login/")
+    # GET
+    form = AskForm(initial={'author': request.user.id})
+    return render(request, 'post_question.html', {'form': form})
+
+
+def authorization(request):
+    # POST
+    if request.method == "POST":
+        form = AuthorizationForm(request.POST)
+        print("POST")
+        print(request.POST)
+
         if form.is_valid():
-            question = form.save()
-            url = question.get_url()
-            return HttpResponseRedirect(url)
-    else:
-        form = AskForm()
-        return render(request, 'post_question.html', {'form': form}) # change to something 'ask.html'
+            username = form.cleaned_data.get("username")
+            print(username)
+            password = form.cleaned_data.get("password")
+            print(password)
+            user = User.objects.get(username=username, password=password) 
+            if user is not None:
+                print("valid user")
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect("/")
+                else:
+                    print("error message") # peredelat'
+                    return HttpResponseRedirect("login.html")
+            else:
+                print("the user is not defined")
+
+        else:
+            print("invalid form!!")
+
+    # GET
+    form = AuthorizationForm()
+    return render(request, "login.html", {"form": form})
 
 
 def post_answer(request):
-    if request.method == "POST":
-        form = AnswerForm(request.POST)
-        if form.is_valid():
-            answer = form.save()
-            url = answer.question.get_url()
-            return HttpResponseRedirect(url)
-    else:
-        form = AnswerForm(1)
-        return form
+    pass 
+
+
+def signup(request):
+    form = SignupForm(request.POST or None)
+    
+    if form.is_valid():
+        try:
+            user = form.save()
+        except:
+            user = None
+
+        if user != None:
+            logout(request)
+            login(request, user)
+            return HttpResponseRedirect("/")
+        else:
+            request.session["register_error"] = 1
+
+    return render(request, "signup.html", {"form": form})
+
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect("/") 
