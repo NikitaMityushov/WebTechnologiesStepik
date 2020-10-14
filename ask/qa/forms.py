@@ -78,12 +78,12 @@ class AuthorizationForm(forms.Form):
 
 
 class SignupForm(forms.Form):
-    login = forms.CharField(label="login", widget=forms.Textarea)
+    username = forms.CharField(label="username", widget=forms.Textarea)
     email = forms.EmailField(label="email", widget=forms.Textarea)
     password = forms.CharField(label="password", widget=forms.PasswordInput)
 
-    def clean_login(self):
-        login = self.cleaned_data.get("login")
+    def clean_username(self):
+        login = self.cleaned_data.get("username")
         user = User.objects.filter(username=login)
         
         if user.exists():
@@ -110,6 +110,6 @@ class SignupForm(forms.Form):
             return password    
 
     def save(self):
-        user = User.objects.create(username=self.cleaned_data['login'], email=self.cleaned_data['email'], password=self.cleaned_data['password'])
+        user = User.objects.create(username=self.cleaned_data['username'], email=self.cleaned_data['email'], password=self.cleaned_data['password'])
         return user
 
