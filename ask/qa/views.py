@@ -74,6 +74,8 @@ def display_concrete(request, req_id):
             form = AnswerForm(request.POST)
             if form.is_valid():
                 answer = form.save()
+                answer.author = request.user
+                answer.save()
                 url = answer.question.get_url()
                 return HttpResponseRedirect(url)
         # is_authentificated == False
@@ -81,7 +83,7 @@ def display_concrete(request, req_id):
     # GET
     question = get_object_or_404(Question, id=req_id,)
     answers = Answer.objects.filter(question = question)
-    form = AnswerForm(initial={'question': req_id, 'author': request.user.id})
+    form = AnswerForm(initial={'question': req_id})
     print(form)
     return render(request, 'con_ques.html', {
         'question': question,
@@ -116,6 +118,8 @@ def post_question(request):
             if form.is_valid():
                 print("valid")
                 question = form.save()
+                question.author = request.user
+                question.save()
                 url = question.get_url()
                 return HttpResponseRedirect(url)
         else:
@@ -123,7 +127,7 @@ def post_question(request):
             print("not authorized 222")
             return HttpResponseRedirect("/login/")
     # GET
-    form = AskForm(initial={'author': request.user.id})
+    form = AskForm()
     return render(request, 'post_question.html', {'form': form})
 
 

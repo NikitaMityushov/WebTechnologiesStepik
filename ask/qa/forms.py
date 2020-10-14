@@ -8,7 +8,6 @@ from django.shortcuts import get_object_or_404
 class AskForm(forms.Form):
     title = forms.CharField(max_length=100)
     text = forms.CharField(widget=forms.Textarea)
-    author = forms.IntegerField(widget=forms.HiddenInput)
 
     
     def clean_text(self):
@@ -27,16 +26,13 @@ class AskForm(forms.Form):
             return tl
         
     def save(self):
-        self.cleaned_data['author'] = get_object_or_404(User, pk=self.cleaned_data['author'])
         question = Question(**self.cleaned_data)
-        question.save()
         return question
 
 
 class AnswerForm(forms.Form):
     text = forms.CharField(widget=forms.Textarea)
     question = forms.IntegerField(widget=forms.HiddenInput)
-    author = forms.IntegerField(widget=forms.HiddenInput)
 
     def clean_text(self):
         answer = self.cleaned_data['text']
@@ -45,10 +41,8 @@ class AnswerForm(forms.Form):
 
     def save(self):
         self.cleaned_data['question'] = get_object_or_404(Question, pk=self.cleaned_data['question'])
-        self.cleaned_data['author'] = get_object_or_404(User, pk=self.cleaned_data['author'])
         print(self.cleaned_data)
         answer = Answer(**self.cleaned_data)                
-        answer.save()
         return answer
 
 
